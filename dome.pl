@@ -81,10 +81,11 @@ my %commands = (
 	},
 
 	list => sub {
-		# TODO handle 'all'
+		my $opt = shift || "todo";
+		print STDERR "$0: list: $opt: unknown option\n" and exit -1 unless (grep /^$opt$/, ("todo", "all"));
 		for my $id (keys %db) {
 			my %td = %{$db{$id}};
-			print "$id\t$td{desc}\n" unless $td{complete};
+			print "$id\t$td{desc}\n" unless ($opt eq "todo") and $td{complete};
 		}
 	},
 
