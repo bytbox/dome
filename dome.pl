@@ -71,12 +71,17 @@ my %commands = (
 	done => sub {
 		unshift @_, 1;
 		my %td = task_data @_;
+		my $otd = $db{$td{id}};
+		if ($otd and not $td{desc}) {
+			$td{desc} = $otd->{desc};
+		}
 		$db{$td{id}} = \%td;
 	},
 
 	todo => sub {
 		unshift @_, 0;
 		my %td = task_data @_;
+		print STDERR "$0: todo: $td{id}: id already exists\n" and exit -1 if $db{$td{id}};
 		$db{$td{id}} = \%td;
 	},
 
@@ -85,7 +90,7 @@ my %commands = (
 		print STDERR "$0: list: $opt: unknown option\n" and exit -1 unless (grep /^$opt$/, ("todo", "all"));
 		for my $id (keys %db) {
 			my %td = %{$db{$id}};
-			print "$id\t$td{desc}\n" unless ($opt eq "todo") and $td{complete};
+			print ":$id\t$td{desc}\n" unless ($opt eq "todo") and $td{complete};
 		}
 	},
 
